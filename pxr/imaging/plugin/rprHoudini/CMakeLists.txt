@@ -22,6 +22,41 @@ target_link_libraries(RPR_for_Houdini
     rprUsd
     Houdini)
 
+if(RENDER_STUDIO_RESOLVER AND RESOLVER_INSTALL_LOCATION)
+    if(NOT WIN32)
+        message(FATAL_ERROR "RenderStudio Resolver for now is supported only for Windows")
+    endif()
+    find_path(RESOLVER_INCLUDE_DIR
+            "RenderStudioResolver/Resolver.h"
+            PATHS ${RESOLVER_INSTALL_LOCATION}
+            PATH_SUFFIXES "include"
+            NO_DEFAULT_PATH
+            REQUIRED)
+    find_path(RESOLVER_LIB_DIR
+            "RenderStudioResolver.dll"
+            PATHS ${RESOLVER_INSTALL_LOCATION}
+            PATH_SUFFIXES "plugin/usd"
+            NO_DEFAULT_PATH
+            REQUIRED)
+    find_path(RESOLVER_LIBIMPL_DIR
+            "RenderStudioResolver.lib"
+            PATHS ${RESOLVER_INSTALL_LOCATION}
+            PATH_SUFFIXES "plugin/usd"
+            NO_DEFAULT_PATH
+            REQUIRED)
+
+    message(STATUS "  RenderStudio Resolver includes: ${RESOLVER_INCLUDE_DIR}")
+    message(STATUS "  RenderStudio Resolver libs: ${RESOLVER_LIB_DIR}")
+
+    add_library(RenderStudioResolver SHARED IMPORTED)
+    set_target_properties(RenderStudioResolver PROPERTIES
+            IMPORTED_LOCATION ${RESOLVER_LIB_DIR}/RenderStudioResolver.dll
+            IMPORTED_IMPLIB ${RESOLVER_LIBIMPL_DIR}/RenderStudioResolver.lib
+            INTERFACE_INCLUDE_DIRECTORIES ${RESOLVER_INCLUDE_DIR})
+    target_link_libraries(RPR_for_Houdini RenderStudioResolver)
+    target_include_directories(RPR_for_Houdini PRIVATE ${RESOLVER_INCLUDE_DIR})
+endif()
+
 _pxr_init_rpath(rpath "houdini/dso")
 _pxr_add_rpath(rpath "${CMAKE_INSTALL_PREFIX}/lib")
 _pxr_install_rpath(rpath RPR_for_Houdini)
