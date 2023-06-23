@@ -19,6 +19,7 @@ limitations under the License.
 
 #include <OP/OP_OperatorTable.h>
 #include <UT/UT_DSOVersion.h>
+#include "RenderStudioResolver/Resolver.h"
 
 void newVopOperator(OP_OperatorTable* io_table) {
     PXR_NAMESPACE_USING_DIRECTIVE
